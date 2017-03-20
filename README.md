@@ -46,7 +46,7 @@ and enjoy LDA!
 
 ## Authors
 
-* **Gabriele Pergola** - *PhD student*
+* *Gabriele Pergola* - *PhD student*
 
 ## License
 
