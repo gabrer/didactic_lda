@@ -38,7 +38,7 @@ and enjoy LDA!
 
 
 
-## Built With
+## References
 
 * [Latent Dirichlet Allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf) - The seminal paper about LDA (based on Varionatl Inference)
 * [Gibbs sampling for LDA](http://psiexp.ss.uci.edu/research/papers/sciencetopics.pdf) - LDA based on Gibbs sampling
