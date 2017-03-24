@@ -1,15 +1,28 @@
 #!/usr/bin/python
 
+
 from nltk.corpus import stopwords 
 from nltk.stem.wordnet import WordNetLemmatizer
-import numpy
+import numpy as np
 import string
 
 from collections import defaultdict
 
+import random
 from random import randint
 
+# Graph
+import pandas as pd
+from scipy import stats, integrate
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# System
 import sys
+
+# Sort list
+from operator import itemgetter
+
 
 
 ################################################
@@ -166,7 +179,6 @@ def count_words_in_topic(meta_tokens):
 
 
 
-
 ############################################################
 # MAIN
 ############################################################
@@ -178,9 +190,12 @@ if __name__ == '__main__':
     ##############################
     n_of_topics = 3
     iterations = 2500
+
+    # Gensim symmetric initialization
     alpha = [1.0/n_of_topics] * n_of_topics
     beta  = [1.0/n_of_topics] * n_of_topics
 
+    # Griffiths symmetric initialization p. 5
     #alpha = [50/n_of_topics] * n_of_topics
     #beta  = [0.01] * n_of_topics
 
@@ -207,7 +222,6 @@ if __name__ == '__main__':
     dictionary_size = len(dictionary)
 
 
-
     ##############################
     # Random initialization of Z (i.e. assigned topics to words) and counters.
     ##############################
@@ -216,6 +230,7 @@ if __name__ == '__main__':
     for word in dictionary:
         for doc in doc_clean:
             if word in doc:
+
 
                 # Random topic choosing
                 random_topic = randint(0, n_of_topics-1)
@@ -261,10 +276,10 @@ if __name__ == '__main__':
             # List of tokens: document and assigned topic
             tokens_of_word = meta_tokens[current_word]
 
+            # DEBUG
             print "\n\n/////////////////////////////"
             print "Current word:",
-            print current_word,
-            print "\n\n/////////////////////////////"
+            print current_word
 
 
             ##############################
@@ -273,7 +288,7 @@ if __name__ == '__main__':
                 current_doc   = current_token[0]
                 current_topic = current_token[1]
 
-
+                # DEBUG
                 print "\nCurrent document: ",
                 print current_doc
                 print "Current topic:",
@@ -293,7 +308,7 @@ if __name__ == '__main__':
                 # Number of words in each topic
                 n_of_words_in_topic = count_words_in_topic(meta_tokens)
 
-
+                # DEBUG
                 print "- Number of tokens in current document assigned to the current topic: ",
                 print num_of_times_topic_in_doc
 
@@ -320,10 +335,7 @@ if __name__ == '__main__':
 
 
                     topic_distribution[t] = dt_numerator * (tw_numerator / tw_denominator)
-                    # print "Topic distribution for",
-                    # print t,
-                    # print "is",
-                    # print topic_distribution[t]
+
 
 
 
@@ -333,7 +345,8 @@ if __name__ == '__main__':
                 print "Normalized topic distributions: "
                 print normalized_topic_distribution
 
-                sampled_topic = numpy.random.choice(numpy.arange(0, n_of_topics), p=normalized_topic_distribution)
+
+                sampled_topic = np.random.choice(np.arange(0, n_of_topics), p=normalized_topic_distribution)
                 print "Sampled topic:",
                 print sampled_topic 
 
@@ -357,13 +370,99 @@ if __name__ == '__main__':
     print "\n\nEND of LDA"
 
 
-    print "\nFinal normalized distrubtion: "
-    print normalized_topic_distribution
 
 
-    print "\n\nTopic composition:"
+    ##############################
+    # TOPIC-WORDS DISTRIBUTION
+
+    distribution_over_words = [[] for i in range(n_of_topics)]
+
+    # Number of words in each topic
+    n_of_words_in_topic = count_words_in_topic(meta_tokens)
+
+   
+    for current_topic in xrange(n_of_topics):
+
+        for current_word in meta_tokens:
+                   
+            print "\n///////////////"
+            print "current topic:",
+            print current_topic
+            print "current_word:",
+            print current_word
+
+            # Number of times the current word was assigned to the current topic
+            times_current_word_in_current_topic = count_curr_word_in_curr_topic(meta_tokens, current_word, current_topic)
+                    
+            tw_numerator   = beta[current_topic]  + times_current_word_in_current_topic;
+            tw_denominator =  n_of_words_in_topic[current_topic] + (beta[current_topic] * dictionary_size)
+
+            # print "Probability for word -",
+            # print current_word,
+
+            word_probability_for_current_topic = tw_numerator / tw_denominator;
+
+            # print " - is",
+            # print word_probability_for_current_topic
+
+            distribution_over_words[current_topic].append( (current_word, word_probability_for_current_topic) )
+
+
+    # Order the lists by the probability values
+    for t in range(n_of_topics):
+        distribution_over_words[t].sort(key=itemgetter(1), reverse=True)
+
+
+
+
+
+    ##############################
+    # PRINT GRAPH
+    sns.set(color_codes=True)
+    np.random.seed(sum(map(ord, "distributions")))
+
+    sns.set(style="white", palette="muted")
+
+    # Ascisse e ordinate
+    for t in range(n_of_topics):
+        x = list(range(len(distribution_over_words[t])))
+        y = []
+        labels = []
+        c_topic = distribution_over_words[t]
+        for c_word in c_topic:
+            labels.append(c_word[0])
+            y.append(c_word[1])    
+
+        plt.xticks(x, labels)
+        plt.plot(x, y)
+
+        plt.setp(plt.xticks()[1], rotation=45, ha='right')
+
+        #plt.plot(x, np.sin(x), x, np.cos(x));
+        #sns.countplot(x="deck", data=titanic, palette="Greens_d");
+
+        sns.plt.show()
+
+
+
+    ##############################
+    print "\n FINAL DISTRIBUTION:"
+    for current_topic in xrange(n_of_topics):
+        print "\nTopic",
+        print current_topic
+
+        for meta_word in distribution_over_words[current_topic]:
+            print meta_word[0],
+            print "\t",
+            print meta_word[1]
+
+
+
+
+    ##############################
+    print "\n\nASSIGNED TOPIC FOR EACH WORD IN DOCUMENTS:",
     for i in xrange(n_of_topics):
-        print "\nCurrent topic -",
+        print "\n\nCurrent topic -",
         print i
         
         # Cycle over all the tokens in corpus
@@ -376,14 +475,4 @@ if __name__ == '__main__':
                 if(current_topic == i):
                     print current_word,
                     print current_doc
-
-
-
-
-
-    # for key,values in word_dict.iteritems():
-    #     print "%s: %s" % (key, values)
-    #     print key
-
-
 
