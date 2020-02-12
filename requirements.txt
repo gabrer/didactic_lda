@@ -16,7 +16,7 @@ debtags==2.0
 decorator==4.0.6
 defer==1.0.6
 dirspec==13.10
-Django==1.10.5
+Django==1.11.28
 dnspython==1.12.0
 duplicity==0.7.6
 enum34==1.1.2
