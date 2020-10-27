@@ -9,7 +9,7 @@ Bottleneck==1.0.0
 bz2file==0.98
 chardet==2.3.0
 colorama==0.3.6
-cryptography==1.2.3
+cryptography==3.2
 cycler==0.10.0
 Cython==0.25.2
 debtags==2.0
