@@ -85,7 +85,7 @@ Twisted==16.0.0
 twitter==1.17.1
 ubuntuone-client-data==14.4
 unity-lens-photos==1.0
-urllib3==1.13.1
+urllib3==1.26.5
 virtualenv==15.1.0
 wordcloud==1.2.1
 zim==0.65
