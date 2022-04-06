@@ -81,7 +81,7 @@ subprocess32==3.2.7
 tables==3.2.2
 tensorflow==0.5.0
 thefuck==3.3
-Twisted==16.0.0
+Twisted==22.2.0
 twitter==1.17.1
 ubuntuone-client-data==14.4
 unity-lens-photos==1.0
